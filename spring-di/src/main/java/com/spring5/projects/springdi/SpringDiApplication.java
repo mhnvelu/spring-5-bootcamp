@@ -16,6 +16,7 @@ public class SpringDiApplication {
                                                                             args);
        MyController myController = (MyController)applicationContext.getBean("myController");
        String greeting = myController.sayHello();
+        System.out.println("--------Primary Bean------");
        System.out.println(greeting);
 
         System.out.println("--------Property based DI-------");

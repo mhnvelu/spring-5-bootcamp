@@ -3,10 +3,11 @@ package com.spring5.projects.springdi.services;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+@Primary
 @Service
-public class PropertyGreetingServiceImpl implements GreetingService {
+public class PrimaryGreetingServiceImpl implements GreetingService {
     @Override
     public String sayGreeting() {
-        return "Hello World - Property Service";
+        return "Hello World - Primary Bean Service";
     }
 }
