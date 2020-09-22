@@ -14,7 +14,7 @@
     </parent>
     <groupId>com.spring5.projects</groupId>
     <artifactId>spring-pet-clinic</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>spring-pet-clinic</name>
     <description>Spring Pet Clinic Project</description>
 
@@ -37,13 +37,17 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <goals>install</goals>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>pom.xml</checkModificationExclude>
+                    </checkModificationExcludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <scm>
-        <developerConnection>scm:git:git@github.com:mhnvelu/spring-5-bootcamp.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/mhnvelu/spring-5-bootcamp.git</developerConnection>
       <tag>spring-pet-clinic-0.0.1</tag>
   </scm>
 
