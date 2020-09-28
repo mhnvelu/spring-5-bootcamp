@@ -2,6 +2,7 @@ package com.spring5.projects.springdi;
 
 import com.spring5.projects.springdi.controllers.*;
 import com.spring5.projects.springdi.datasource.FakeDataSource;
+import com.spring5.projects.springdi.datasource.FakeJmsBroker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -43,9 +44,16 @@ public class SpringDiApplication {
         System.out.println("--------Load External Properties file-------");
         FakeDataSource fakeDataSource =
                 (FakeDataSource) applicationContext.getBean(FakeDataSource.class);
-        System.out.println("Username : " + fakeDataSource.getUsername());
-        System.out.println("Password : " + fakeDataSource.getPassword());
+        System.out.println("DB Username : " + fakeDataSource.getUsername());
+        System.out.println("DB Password : " + fakeDataSource.getPassword());
         System.out.println("DBUrl : " + fakeDataSource.getDbUrl());
+
+
+        FakeJmsBroker fakeJmsBroker =
+                (FakeJmsBroker) applicationContext.getBean(FakeJmsBroker.class);
+        System.out.println("JMS Username : " + fakeJmsBroker.getUsername());
+        System.out.println("JMS Password : " + fakeJmsBroker.getPassword());
+        System.out.println("JMS Url : " + fakeJmsBroker.getJmsUrl());
     }
 
 }
