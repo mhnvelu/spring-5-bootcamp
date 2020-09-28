@@ -16,7 +16,7 @@ public class VetServiceMap extends MapService<Vet, Long> implements VetService {
 
     @Override
     public Vet save(Vet vet) {
-        return super.save(vet.getId(), vet);
+        return super.save(vet);
     }
 
     @Override
