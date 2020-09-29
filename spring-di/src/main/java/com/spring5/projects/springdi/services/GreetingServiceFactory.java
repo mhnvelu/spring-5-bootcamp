@@ -2,7 +2,7 @@ package com.spring5.projects.springdi.services;
 
 public class GreetingServiceFactory {
 
-    public GreetingService createGreetingSetvice(String lang) {
+    public GreetingService createGreetingService(String lang) {
         switch (lang) {
             case "en":
                 return new I18NEnglishGreetingServiceImpl();
