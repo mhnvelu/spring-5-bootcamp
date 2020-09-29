@@ -1,0 +1,5 @@
+project:
+  nosqldb:
+    username: mongouser_yml
+    password: mongopassword_yml
+    url: mongodb://localhost:2003
