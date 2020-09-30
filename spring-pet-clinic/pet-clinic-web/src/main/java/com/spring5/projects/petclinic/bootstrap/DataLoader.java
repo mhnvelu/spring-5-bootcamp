@@ -52,7 +52,6 @@ public class DataLoader implements CommandLineRunner {
 
         Pet micPet = new Pet();
         micPet.setName("Rosco");
-        ;
         micPet.setPetType(savedDogPetType);
         micPet.setOwner(owner_1);
         micPet.setBirthDate(LocalDate.now());
