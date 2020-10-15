@@ -3,6 +3,7 @@ package com.spring5.projects.springrecipeproject.controllers;
 import com.spring5.projects.springrecipeproject.commands.IngredientCommand;
 import com.spring5.projects.springrecipeproject.commands.RecipeCommand;
 import com.spring5.projects.springrecipeproject.commands.UnitOfMeasureCommand;
+import com.spring5.projects.springrecipeproject.domain.Recipe;
 import com.spring5.projects.springrecipeproject.services.IngredientService;
 import com.spring5.projects.springrecipeproject.services.RecipeService;
 import com.spring5.projects.springrecipeproject.services.UnitOfMeasureService;
@@ -110,6 +111,23 @@ public class IngredientControllerTest {
                                             .param("id", "").param("description", ""))
                .andExpect(status().is3xxRedirection())
                .andExpect(view().name("redirect:/recipe/1/ingredient/2/show"));
+    }
+
+    @Test
+    public void getCreateRecipeIngredientForm() throws Exception{
+        //given
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+
+        //when
+        when(recipeService.findById(anyLong())).thenReturn(recipe);
+
+        //then
+        mockMvc.perform(get("/recipe/1/ingredient/new")).andExpect(status().isOk())
+               .andExpect(view().name("recipe/ingredient/ingredientform"))
+               .andExpect(model().attributeExists("ingredient"))
+               .andExpect(model().attributeExists("uomList"));
+
     }
 
 }

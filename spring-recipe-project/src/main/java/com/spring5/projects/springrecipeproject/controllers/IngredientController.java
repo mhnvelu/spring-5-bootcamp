@@ -2,6 +2,8 @@ package com.spring5.projects.springrecipeproject.controllers;
 
 import com.spring5.projects.springrecipeproject.commands.IngredientCommand;
 import com.spring5.projects.springrecipeproject.commands.RecipeCommand;
+import com.spring5.projects.springrecipeproject.commands.UnitOfMeasureCommand;
+import com.spring5.projects.springrecipeproject.domain.Recipe;
 import com.spring5.projects.springrecipeproject.services.IngredientService;
 import com.spring5.projects.springrecipeproject.services.RecipeService;
 import com.spring5.projects.springrecipeproject.services.UnitOfMeasureService;
@@ -14,11 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/recipe")
 public class IngredientController {
-
+    
     private RecipeService recipeService;
-
     private IngredientService ingredientService;
-
     private UnitOfMeasureService unitOfMeasureService;
 
     public IngredientController(RecipeService recipeService, IngredientService ingredientService,
@@ -48,11 +48,23 @@ public class IngredientController {
 
     @GetMapping
     @RequestMapping("/{recipeId}/ingredient/{ingredientId}/update")
-    public String updateRecipeIngredient(@PathVariable String recipeId,
-                                         @PathVariable String ingredientId, Model model) {
+    public String getUpdateRecipeIngredientForm(@PathVariable String recipeId,
+                                                @PathVariable String ingredientId, Model model) {
 
         model.addAttribute("ingredient", ingredientService
                 .findByRecipeIdAndIngredientId(Long.valueOf(recipeId), Long.valueOf(ingredientId)));
+        model.addAttribute("uomList", unitOfMeasureService.listAll());
+        return "recipe/ingredient/ingredientform";
+    }
+
+    @GetMapping
+    @RequestMapping("/{recipeId}/ingredient/new")
+    public String getCreateRecipeIngredientForm(@PathVariable String recipeId, Model model) {
+        Recipe recipe = recipeService.findById(Long.valueOf(recipeId));
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(recipe.getId());
+        ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
+        model.addAttribute("ingredient", ingredientCommand);
         model.addAttribute("uomList", unitOfMeasureService.listAll());
         return "recipe/ingredient/ingredientform";
     }
