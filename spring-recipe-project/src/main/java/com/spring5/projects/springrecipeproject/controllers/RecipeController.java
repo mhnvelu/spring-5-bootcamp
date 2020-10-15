@@ -26,7 +26,8 @@ public class RecipeController {
     }
 
     @GetMapping
-    public String createRecipe(Model model) {
+    @RequestMapping("/create")
+    public String getCreateRecipeForm(Model model) {
         model.addAttribute("recipe", new RecipeCommand());
         return "recipe/recipeform";
     }
@@ -39,7 +40,7 @@ public class RecipeController {
 
     @GetMapping
     @RequestMapping("/{id}/update")
-    public String updateRecipe(@PathVariable String id, Model model) {
+    public String getUpdateRecipeForm(@PathVariable String id, Model model) {
         model.addAttribute("recipe", recipeService.findCommandById(Long.valueOf(id)));
         return "recipe/recipeform";
     }
