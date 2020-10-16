@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/recipe")
 public class IngredientController {
-    
+
     private RecipeService recipeService;
     private IngredientService ingredientService;
     private UnitOfMeasureService unitOfMeasureService;
@@ -77,5 +77,15 @@ public class IngredientController {
                 ingredientService.saveIngredient(ingredientCommand);
         return "redirect:/recipe/" + savedIngredientCommand.getRecipeId() + "/ingredient/" +
                savedIngredientCommand.getId() + "/show";
+    }
+
+    @GetMapping
+    @RequestMapping("/{recipeId}/ingredient/{ingredientId}/delete")
+    public String deleteRecipeIngredient(@PathVariable String recipeId, @PathVariable String ingredientId,
+                         Model model) {
+        ingredientService.deleteByRecipeIdAndIngredientId(Long.valueOf(recipeId),
+                                                          Long.valueOf(ingredientId));
+
+        return "redirect:/recipe/" + recipeId + "/ingredients";
     }
 }

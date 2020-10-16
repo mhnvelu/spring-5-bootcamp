@@ -62,11 +62,9 @@ public class IngredientServiceImplTest {
         ingredient_2.setId(2L);
 
         recipe = recipe.addIngredient(ingredient_1).addIngredient(ingredient_2);
-
-        //when
         when(recipeRepository.findById(anyLong())).thenReturn(java.util.Optional.of(recipe));
 
-        //then
+        //when
         IngredientCommand ingredientCommand =
                 ingredientService.findByRecipeIdAndIngredientId(1L, 3L);
 
@@ -91,12 +89,10 @@ public class IngredientServiceImplTest {
         savedRecipe.addIngredient(ingredient);
 
         Optional<Recipe> recipeOptional = Optional.of(new Recipe());
-
-        //when
         when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
         when(recipeRepository.save(any())).thenReturn(savedRecipe);
 
-        //then
+        //when
         IngredientCommand savedIngredientCommand =
                 ingredientService.saveIngredient(ingredientCommand);
 
@@ -130,11 +126,10 @@ public class IngredientServiceImplTest {
 
         Optional<Recipe> recipeOptional = Optional.of(new Recipe());
 
-        //when
         when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
         when(recipeRepository.save(any())).thenReturn(savedRecipe);
 
-        //then
+        //when
         IngredientCommand savedIngredientCommand =
                 ingredientService.saveIngredient(ingredientCommand);
 
@@ -143,5 +138,25 @@ public class IngredientServiceImplTest {
         verify(recipeRepository, times(1)).findById(anyLong());
         verify(recipeRepository, times(1)).save(any(Recipe.class));
 
+    }
+
+    @Test
+    public void deleteIngredient() {
+        //given
+        Recipe savedRecipe = new Recipe();
+        savedRecipe.setId(1L);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(1L);
+        savedRecipe.addIngredient(ingredient);
+
+        Optional<Recipe> savedRecipeOptional = Optional.of(savedRecipe);
+        when(recipeRepository.findById(anyLong())).thenReturn(savedRecipeOptional);
+
+        //when
+        ingredientService.deleteByRecipeIdAndIngredientId(1L, 1L);
+
+        //verify
+        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository,times(1)).save(any(Recipe.class));
     }
 }
