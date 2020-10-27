@@ -17,8 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -51,8 +51,8 @@ class OwnerControllerTest {
         when(ownerService.findAll()).thenReturn(owners);
 
         mockMvc.perform(get("/owners/")).andExpect(status().isOk())
-               .andExpect(view().name("owners/index"))
-               .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
+                .andExpect(view().name("owners/index"))
+                .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
     }
 
     @Test
@@ -64,15 +64,30 @@ class OwnerControllerTest {
         when(ownerService.findAll()).thenReturn(owners);
 
         mockMvc.perform(get("/owners/index")).andExpect(status().isOk())
-               .andExpect(view().name("owners/index"))
-               .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
+                .andExpect(view().name("owners/index"))
+                .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
     }
 
     @Test
     void findOwners() throws Exception {
         mockMvc.perform(get("/owners/find")).andExpect(status().isOk())
-               .andExpect(view().name("notimplemented"));
+                .andExpect(view().name("notimplemented"));
 
         verifyNoInteractions(ownerService);
+    }
+
+    @Test
+    void findOwner() throws Exception {
+        //given
+        Owner owner = Owner.builder().id(1L).build();
+        when(ownerService.findById(anyLong())).thenReturn(owner);
+
+        //when
+        mockMvc.perform(get("/owners/1")).andExpect(status().isOk())
+                .andExpect(view().name("owners/ownerDetails"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+
+        //verify
+        verify(ownerService, times(1)).findById(anyLong());
     }
 }
