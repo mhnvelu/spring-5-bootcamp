@@ -3,13 +3,13 @@ package com.spring5.projects.springrecipeproject.services;
 import com.spring5.projects.springrecipeproject.commands.UnitOfMeasureCommand;
 import com.spring5.projects.springrecipeproject.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.spring5.projects.springrecipeproject.repositories.UnitOfMeasureRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Component
+@Service
 public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
 
     private UnitOfMeasureRepository unitOfMeasureRepository;
@@ -24,7 +24,7 @@ public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
     @Override
     public Set<UnitOfMeasureCommand> listAll() {
         return StreamSupport.stream(unitOfMeasureRepository.findAll().spliterator(), false)
-                            .map(unitOfMeasure -> unitOfMeasureToUnitOfMeasureCommand
-                                    .convert(unitOfMeasure)).collect(Collectors.toSet());
+                .map(unitOfMeasure -> unitOfMeasureToUnitOfMeasureCommand.convert(unitOfMeasure))
+                .collect(Collectors.toSet());
     }
 }

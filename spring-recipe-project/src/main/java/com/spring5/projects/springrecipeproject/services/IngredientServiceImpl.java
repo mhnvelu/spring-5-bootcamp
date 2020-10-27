@@ -8,13 +8,13 @@ import com.spring5.projects.springrecipeproject.domain.Recipe;
 import com.spring5.projects.springrecipeproject.repositories.RecipeRepository;
 import com.spring5.projects.springrecipeproject.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Slf4j
-@Component
+@Service
 public class IngredientServiceImpl implements IngredientService {
 
     IngredientToIngredientCommand ingredientToIngredientCommand;
