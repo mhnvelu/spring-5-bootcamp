@@ -9,10 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,8 +20,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class OwnerControllerTest {
@@ -37,41 +36,39 @@ class OwnerControllerTest {
 
     MockMvc mockMvc;
 
+    Set<Owner> owners;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(ownerController).build();
+        owners = new HashSet<>();
+        owners.add(Owner.builder().id(1L).build());
+        owners.add(Owner.builder().id(2L).build());
     }
 
     @Test
     void listOwners() throws Exception {
-        Set<Owner> owners = new HashSet<>();
-        owners.add(Owner.builder().id(1L).build());
-        owners.add(Owner.builder().id(2L).build());
-
         when(ownerService.findAll()).thenReturn(owners);
 
         mockMvc.perform(get("/owners/")).andExpect(status().isOk())
                 .andExpect(view().name("owners/index"))
-                .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
+                .andExpect(model().attribute("owners", hasSize(2)));
     }
 
     @Test
     void listOwnersByIndex() throws Exception {
-        Set<Owner> owners = new HashSet<>();
-        owners.add(Owner.builder().id(1L).build());
-        owners.add(Owner.builder().id(2L).build());
-
         when(ownerService.findAll()).thenReturn(owners);
 
         mockMvc.perform(get("/owners/index")).andExpect(status().isOk())
                 .andExpect(view().name("owners/index"))
-                .andExpect(MockMvcResultMatchers.model().attribute("owners", hasSize(2)));
+                .andExpect(model().attribute("owners", hasSize(2)));
     }
 
     @Test
     void findOwners() throws Exception {
         mockMvc.perform(get("/owners/find")).andExpect(status().isOk())
-                .andExpect(view().name("notimplemented"));
+                .andExpect(view().name("owners/findOwners"))
+                .andExpect(model().attributeExists("owner"));
 
         verifyNoInteractions(ownerService);
     }
@@ -85,9 +82,32 @@ class OwnerControllerTest {
         //when
         mockMvc.perform(get("/owners/1")).andExpect(status().isOk())
                 .andExpect(view().name("owners/ownerDetails"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+                .andExpect(model().attributeExists("owner"));
 
         //verify
         verify(ownerService, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void handleFindOwnerReturnMany() throws Exception {
+        //given
+        when(ownerService.findByLastNameLike(anyString())).thenReturn(
+                Arrays.asList(Owner.builder().id(1L).build(), Owner.builder().id(2L).build()));
+
+        //when
+        mockMvc.perform(get("/owners")).andExpect(status().isOk())
+                .andExpect(view().name("owners/ownersList"))
+                .andExpect(model().attribute("selections", hasSize(2)));
+    }
+
+    @Test
+    void handleFindOwnerReturnOne() throws Exception {
+        //given
+        when(ownerService.findByLastNameLike(anyString()))
+                .thenReturn(Arrays.asList(Owner.builder().id(1L).build()));
+
+        //when
+        mockMvc.perform(get("/owners")).andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/owners/1"));
     }
 }
