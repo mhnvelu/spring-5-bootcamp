@@ -73,7 +73,7 @@ public class OwnerController {
     }
 
     @PostMapping("/new")
-    public String handleOwnerCreation(@ModelAttribute Owner owner) {
+    public String handleOwnerCreation(Owner owner) {
         Owner savedOwner = ownerService.save(owner);
         return "redirect:/owners/" + savedOwner.getId();
     }
@@ -86,7 +86,7 @@ public class OwnerController {
     }
 
     @PostMapping("/{ownerId}/edit")
-    public String processUpdateOwner(@PathVariable Long ownerId, @ModelAttribute Owner owner) {
+    public String processUpdateOwner(@PathVariable Long ownerId, Owner owner) {
         owner.setId(ownerId);
         Owner updatedOwner = ownerService.save(owner);
         return "redirect:/owners/" + updatedOwner.getId();
