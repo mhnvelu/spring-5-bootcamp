@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -62,7 +63,11 @@ class VisitControllerTest {
         when(petService.findById(anyLong())).thenReturn(pet);
 
         //when
-        mockMvc.perform(post("/owners/1/pets/1/visits/new")).andExpect(status().is3xxRedirection())
+        mockMvc.perform(post("/owners/1/pets/1/visits/new")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("description", "visit desc")
+                                .param("visitDate", "2020-11-03"))
+                .andExpect(status().is3xxRedirection()).andExpect(model().attributeExists("visit"))
                 .andExpect(view().name("redirect:/owners/1"));
 
         //verify

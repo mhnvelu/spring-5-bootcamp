@@ -3,6 +3,7 @@ package com.spring5.projects.petclinic.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Getter
@@ -15,6 +16,8 @@ public class Visit extends BaseEntity {
 
     @Column(name = "visit_date")
     private LocalDate visitDate;
+
+    @Size(min = 3, max = 255)
     @Column(name = "description")
     private String description;
     @ManyToOne
