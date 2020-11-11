@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   build:
-    working_directory: ~/repo/spring-pet-clinic
+    working_directory: ~/repo/spring-recipe-project
 
 
 orbs:
