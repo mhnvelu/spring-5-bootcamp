@@ -100,7 +100,7 @@
                                     <label>Difficulty:</label>
                                     <select class="form-control" th:field="*{difficulty}">
                                         <option th:each="difficultyValue :
-                                                ${T(com.spring5.projects.springrecipeproject.domain.Difficulty).values()}"
+                                                ${T(com.spring5.projects.springmongodbrecipeproject.domain.Difficulty).values()}"
                                                 th:value="${difficultyValue.name()}"
                                                 th:text="${difficultyValue.name()}">
                                             val
@@ -153,22 +153,32 @@
                                     <h1 class="panel-title">Ingredients</h1>
                                 </div>
                                 <div class="col-md-1">
-                                    <a class="btn btn-default" href="#" role="button">Edit</a>
+                                    <a class="btn btn-default" href="#"
+                                       th:href="@{'/recipe/' + ${recipe.id} + '/ingredients'}" role="button">View</a>
                                 </div>
                             </div>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <ul>
-                                        <li th:remove="all">1 Cup of milk</li>
-                                        <li th:remove="all">1 Teaspoon of chocolate</li>
-                                        <li th:each="ingredient : ${recipe.ingredients}"
-                                            th:text="${(ingredient.getAmount() +
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul th:if="${not #lists.isEmpty(recipe.ingredients)}">
+                                    <li th:remove="all">1 Cup of milk</li>
+                                    <li th:remove="all">1 Teaspoon of chocolate</li>
+                                    <li th:remove="all">asdf</li>
+                                    <li th:each="ingredient : ${recipe.ingredients}"
+                                        th:text="${(ingredient.getAmount() +
                                         ' ' + ingredient.unitOfMeasure.getUom() +
                                         ' - ' + ingredient.getDescription())}">1 Teaspoon of Sugar
-                                        </li>
-                                    </ul>
+                                    </li>
+                                </ul>
+                                <div th:each="ingredientEach, idx : ${recipe.ingredients}" >
+                                    <input  type="hidden" th:field="*{ingredients[__${idx.index}__].id}" />
+                                    <input  type="hidden" th:field="*{ingredients[__${idx.index}__].description}" />
+                                    <input  type="hidden" th:field="*{ingredients[__${idx.index}__].amount}" />
+                                    <input  type="hidden" th:field="*{ingredients[__${idx.index}__].unitOfMeasure.id}" />
+                                </div>
+                                <div th:each="catEach, idx : ${recipe.categories}" >
+                                    <input  type="hidden" th:field="*{categories[__${idx.index}__].id}" />
                                 </div>
                             </div>
                         </div>

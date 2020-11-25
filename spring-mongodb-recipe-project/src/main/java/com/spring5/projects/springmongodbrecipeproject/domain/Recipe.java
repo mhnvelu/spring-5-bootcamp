@@ -1,13 +1,21 @@
 package com.spring5.projects.springmongodbrecipeproject.domain;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@Document
 public class Recipe {
 
-
+    @Id
     private String id;
 
     private String description;
@@ -27,22 +35,25 @@ public class Recipe {
 
     private Set<Ingredient> ingredients = new HashSet<>();
 
+    @DBRef
     private Set<Category> categories = new HashSet<>();
 
     public void setNotes(Notes notes) {
-        this.notes = notes;
-        notes.setRecipe(this);
+        if (notes != null) {
+            this.notes = notes;
+        }
+//        notes.setRecipe(this);
     }
 
     public Recipe addIngredient(Ingredient ingredient) {
-        ingredient.setRecipe(this);
+//        ingredient.setRecipe(this);
         this.ingredients.add(ingredient);
         return this;
     }
 
     public Recipe removeIngredient(Ingredient ingredient) {
-        ingredient.setRecipe(null);
-//        this.ingredients.remove(ingredient);
+//        ingredient.setRecipe(null);
+        this.ingredients.remove(ingredient);
         return this;
     }
 }
