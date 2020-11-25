@@ -68,8 +68,8 @@ public class IngredientServiceImplTest {
                 ingredientService.findByRecipeIdAndIngredientId("1", "3");
 
         //assert
-        assertEquals(3L, ingredientCommand.getId());
-        assertEquals(1L, ingredientCommand.getRecipeId());
+        assertEquals("3", ingredientCommand.getId());
+        assertEquals("1", ingredientCommand.getRecipeId());
 
         //verify
         verify(recipeRepository, times(1)).findById(anyString());
@@ -96,7 +96,7 @@ public class IngredientServiceImplTest {
                 ingredientService.saveIngredient(ingredientCommand);
 
         //verify
-        assertEquals(1L, savedIngredientCommand.getId());
+        assertEquals("1", savedIngredientCommand.getId());
         verify(recipeRepository, times(1)).findById(anyString());
         verify(recipeRepository, times(1)).save(any(Recipe.class));
     }
@@ -133,7 +133,7 @@ public class IngredientServiceImplTest {
                 ingredientService.saveIngredient(ingredientCommand);
 
         //verify
-        assertEquals(1L, savedIngredientCommand.getId());
+        assertEquals("1", savedIngredientCommand.getId());
         verify(recipeRepository, times(1)).findById(anyString());
         verify(recipeRepository, times(1)).save(any(Recipe.class));
 
