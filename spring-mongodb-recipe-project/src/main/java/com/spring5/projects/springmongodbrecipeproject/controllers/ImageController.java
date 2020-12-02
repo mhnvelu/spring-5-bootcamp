@@ -1,8 +1,8 @@
 package com.spring5.projects.springmongodbrecipeproject.controllers;
 
 import com.spring5.projects.springmongodbrecipeproject.commands.RecipeCommand;
-import com.spring5.projects.springmongodbrecipeproject.services.ImageService;
-import com.spring5.projects.springmongodbrecipeproject.services.RecipeService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.ImageReactiveService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.RecipeReactiveService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,18 +20,19 @@ import java.io.InputStream;
 @Controller
 public class ImageController {
 
-    private ImageService imageService;
+    private ImageReactiveService imageReactiveService;
 
-    private RecipeService recipeService;
+    private RecipeReactiveService recipeReactiveService;
 
-    public ImageController(ImageService imageService, RecipeService recipeService) {
-        this.imageService = imageService;
-        this.recipeService = recipeService;
+    public ImageController(ImageReactiveService imageReactiveService,
+                           RecipeReactiveService recipeReactiveService) {
+        this.imageReactiveService = imageReactiveService;
+        this.recipeReactiveService = recipeReactiveService;
     }
 
     @GetMapping("/recipe/{recipeId}/imageupload")
     public String getImageUploadForm(@PathVariable String recipeId, Model model) {
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        RecipeCommand recipeCommand = recipeReactiveService.findCommandById(recipeId).block();
         model.addAttribute("recipe", recipeCommand);
         return "recipe/imageuploadform";
     }
@@ -39,14 +40,14 @@ public class ImageController {
     @PostMapping("/recipe/{recipeId}/image")
     public String saveImageFile(@PathVariable String recipeId,
                                 @RequestParam("imagefile") MultipartFile multipartFile) {
-        imageService.saveImageFile(recipeId, multipartFile);
+        imageReactiveService.saveImageFile(recipeId, multipartFile);
         return "redirect:/recipe/" + recipeId;
     }
 
     @GetMapping("/recipe/{recipeId}/image")
     public void getRecipeImage(@PathVariable String recipeId,
                                HttpServletResponse httpServletResponse) throws IOException {
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        RecipeCommand recipeCommand = recipeReactiveService.findCommandById(recipeId).block();
         if (recipeCommand.getImage() != null) {
             byte[] byteArray = new byte[recipeCommand.getImage().length];
             int i = 0;

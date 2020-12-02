@@ -2,7 +2,8 @@ package com.spring5.projects.springmongodbrecipeproject.controllers;
 
 import com.spring5.projects.springmongodbrecipeproject.commands.RecipeCommand;
 import com.spring5.projects.springmongodbrecipeproject.services.ImageService;
-import com.spring5.projects.springmongodbrecipeproject.services.RecipeService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.ImageReactiveService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.RecipeReactiveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -11,9 +12,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -21,9 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ImageControllerTest {
     @Mock
-    ImageService imageService;
+    ImageReactiveService imageReactiveService;
     @Mock
-    RecipeService recipeService;
+    RecipeReactiveService recipeReactiveService;
 
     ImageController imageController;
 
@@ -32,7 +33,7 @@ class ImageControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        imageController = new ImageController(imageService, recipeService);
+        imageController = new ImageController(imageReactiveService, recipeReactiveService);
         mockMvc = MockMvcBuilders.standaloneSetup(imageController)
                 .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
@@ -43,14 +44,15 @@ class ImageControllerTest {
         RecipeCommand recipeCommand = new RecipeCommand();
         recipeCommand.setId("1");
 
-        when(recipeService.findCommandById(anyString())).thenReturn(recipeCommand);
+        when(recipeReactiveService.findCommandById(anyString()))
+                .thenReturn(Mono.just(recipeCommand));
 
         //when
         mockMvc.perform(get("/recipe/1/imageupload")).andExpect(status().isOk())
                 .andExpect(model().attributeExists("recipe"));
 
         //verify
-        verify(recipeService, times(1)).findCommandById(anyString());
+        verify(recipeReactiveService, times(1)).findCommandById(anyString());
 
     }
 
@@ -67,7 +69,7 @@ class ImageControllerTest {
                 .andExpect(view().name("redirect:/recipe/1"));
 
         //verify
-        verify(imageService, times(1)).saveImageFile(anyString(), any());
+        verify(imageReactiveService, times(1)).saveImageFile(anyString(), any());
     }
 
     @Test
@@ -84,7 +86,7 @@ class ImageControllerTest {
         }
 
         recipeCommand.setImage(bytes);
-        when(recipeService.findCommandById(anyString())).thenReturn(recipeCommand);
+        when(recipeReactiveService.findCommandById(anyString())).thenReturn(Mono.just(recipeCommand));
 
         //when
         MockHttpServletResponse response =

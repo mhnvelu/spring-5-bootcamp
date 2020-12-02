@@ -1,6 +1,6 @@
 package com.spring5.projects.springmongodbrecipeproject.controllers;
 
-import com.spring5.projects.springmongodbrecipeproject.services.RecipeService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.RecipeReactiveService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    private final RecipeService recipeService;
+    private final RecipeReactiveService recipeReactiveService;
 
-    public IndexController(RecipeService recipeService) {
-        this.recipeService = recipeService;
+    public IndexController(RecipeReactiveService recipeReactiveService) {
+        this.recipeReactiveService = recipeReactiveService;
     }
 
     @RequestMapping({"", "/", "/index"})
     public String getIndexPage(Model model) {
         log.info("Getting index page");
-        model.addAttribute("recipes", recipeService.getRecipes());
+        model.addAttribute("recipes", recipeReactiveService.getRecipes().collectList().block());
         return "index";
     }
 }

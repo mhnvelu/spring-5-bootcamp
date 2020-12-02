@@ -6,6 +6,7 @@ import com.spring5.projects.springmongodbrecipeproject.commands.UnitOfMeasureCom
 import com.spring5.projects.springmongodbrecipeproject.domain.Recipe;
 import com.spring5.projects.springmongodbrecipeproject.services.RecipeService;
 import com.spring5.projects.springmongodbrecipeproject.services.reactive.IngredientReactiveService;
+import com.spring5.projects.springmongodbrecipeproject.services.reactive.RecipeReactiveService;
 import com.spring5.projects.springmongodbrecipeproject.services.reactive.UnitOfMeasureReactiveService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/recipe")
 public class IngredientController {
 
-    private RecipeService recipeService;
+    private RecipeReactiveService recipeReactiveService;
     private IngredientReactiveService ingredientReactiveService;
     private UnitOfMeasureReactiveService unitOfMeasureReactiveService;
 
-    public IngredientController(RecipeService recipeService,
+    public IngredientController(RecipeReactiveService recipeReactiveService,
                                 IngredientReactiveService ingredientReactiveService,
                                 UnitOfMeasureReactiveService unitOfMeasureReactiveService) {
-        this.recipeService = recipeService;
+        this.recipeReactiveService = recipeReactiveService;
         this.ingredientReactiveService = ingredientReactiveService;
         this.unitOfMeasureReactiveService = unitOfMeasureReactiveService;
     }
@@ -32,7 +33,7 @@ public class IngredientController {
     @GetMapping("/{recipeId}/ingredients")
     public String listRecipeIngredients(@PathVariable String recipeId, Model model) {
         log.debug("Getting Ingredients list for Recipe id : " + recipeId);
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        RecipeCommand recipeCommand = recipeReactiveService.findCommandById(recipeId).block();
         model.addAttribute("recipe", recipeCommand);
         return "recipe/ingredient/list";
     }
@@ -57,7 +58,7 @@ public class IngredientController {
 
     @GetMapping("/{recipeId}/ingredient/new")
     public String getCreateRecipeIngredientForm(@PathVariable String recipeId, Model model) {
-        Recipe recipe = recipeService.findById(recipeId);
+        Recipe recipe = recipeReactiveService.findById(recipeId).block();
         IngredientCommand ingredientCommand = new IngredientCommand();
         ingredientCommand.setRecipeId(recipe.getId());
         ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
