@@ -38,21 +38,31 @@ public class RecipeReactiveServiceImpl implements RecipeReactiveService {
 
     @Override
     public Mono<RecipeCommand> findCommandById(String id) {
-        return Mono.just(recipeToRecipeCommand.convert(findById(id).block()));
+//        return Mono.just(recipeToRecipeCommand.convert(findById(id).block()));
+        return recipeReactiveRepository.findById(id).map(recipe -> {
+            RecipeCommand recipeCommand = recipeToRecipeCommand.convert(recipe);
+
+            recipeCommand.getIngredients().forEach(rc -> {
+                rc.setRecipeId(recipeCommand.getId());
+            });
+
+            return recipeCommand;
+        });
     }
+
 
     @Override
     public Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) {
         Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
 
-        Recipe savedRecipe = recipeReactiveRepository.save(detachedRecipe).block();
-        log.debug("Saved RecipeId:" + savedRecipe.getId());
-        return Mono.just(recipeToRecipeCommand.convert(savedRecipe));
+        Mono<Recipe> savedRecipe = recipeReactiveRepository.save(detachedRecipe);
+//        log.debug("Saved RecipeId:" + savedRecipe.getId());
+        return savedRecipe.map(recipeToRecipeCommand::convert);
     }
 
     @Override
     public Mono<Void> deleteById(String id) {
-        recipeReactiveRepository.deleteById(id).block();
+        recipeReactiveRepository.deleteById(id).subscribe();
         return Mono.empty();
     }
 }

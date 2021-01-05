@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.validation.Valid;
+import org.thymeleaf.exceptions.TemplateInputException;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Controller
@@ -20,14 +20,20 @@ import javax.validation.Valid;
 public class RecipeController {
 
     RecipeReactiveService recipeReactiveService;
+    private WebDataBinder webDataBinder;
 
     public RecipeController(RecipeReactiveService recipeReactiveService) {
         this.recipeReactiveService = recipeReactiveService;
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        this.webDataBinder = webDataBinder;
+    }
+
     @GetMapping("/{id}")
     public String getRecipeById(@PathVariable(name = "id") String id, Model model) {
-        Recipe recipe = recipeReactiveService.findById(id).block();
+        Mono<Recipe> recipe = recipeReactiveService.findById(id);
         model.addAttribute("recipe", recipe);
         return "recipe/show";
     }
@@ -39,8 +45,10 @@ public class RecipeController {
     }
 
     @PostMapping
-    public String saveOrUpdateRecipe(@Valid @ModelAttribute("recipe") RecipeCommand recipeCommand,
-                                     BindingResult bindingResult) {
+    public String saveOrUpdateRecipe(@ModelAttribute("recipe") RecipeCommand recipeCommand) {
+        // workaround for @Valid. it doesnt work for webflux
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
 
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors().forEach(objectError -> {
@@ -55,7 +63,7 @@ public class RecipeController {
 
     @GetMapping("/{id}/update")
     public String getUpdateRecipeForm(@PathVariable String id, Model model) {
-        model.addAttribute("recipe", recipeReactiveService.findCommandById(id).block());
+        model.addAttribute("recipe", recipeReactiveService.findCommandById(id));
         return "recipe/recipeform";
     }
 
@@ -66,15 +74,27 @@ public class RecipeController {
     }
 
     //Exception Handler
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    @ExceptionHandler(NotFoundException.class)
+//    public ModelAndView handleNotFound(Exception exception) {
+//        log.error("Handling Not Found Exception...");
+//        log.error(exception.getMessage());
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.setViewName("404error");
+//        modelAndView.addObject("exception", exception);
+//        return modelAndView;
+//    }
+
+
+    //Exception handling for web-flux
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handleNotFound(Exception exception) {
+    @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
+    public String handleNotFound(Exception exception, Model model) {
         log.error("Handling Not Found Exception...");
         log.error(exception.getMessage());
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("404error");
-        modelAndView.addObject("exception", exception);
-        return modelAndView;
+        model.addAttribute("exception", exception);
+        return "404error";
     }
+
 
 }

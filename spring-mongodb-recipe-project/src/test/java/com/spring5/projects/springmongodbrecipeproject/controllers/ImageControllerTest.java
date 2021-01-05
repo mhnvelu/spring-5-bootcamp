@@ -72,29 +72,29 @@ class ImageControllerTest {
         verify(imageReactiveService, times(1)).saveImageFile(anyString(), any());
     }
 
-    @Test
-    void renderImageFromDB() throws Exception {
-        //given
-        RecipeCommand recipeCommand = new RecipeCommand();
-        recipeCommand.setId("1");
-
-        String img = "Test image";
-        Byte bytes[] = new Byte[img.getBytes().length];
-        int i = 0;
-        for (byte b : img.getBytes()) {
-            bytes[i++] = b;
-        }
-
-        recipeCommand.setImage(bytes);
-        when(recipeReactiveService.findCommandById(anyString())).thenReturn(Mono.just(recipeCommand));
-
-        //when
-        MockHttpServletResponse response =
-                mockMvc.perform(get("/recipe/1/image")).andExpect(status().isOk()).andReturn()
-                        .getResponse();
-        byte[] content = response.getContentAsByteArray();
-        assertEquals(img.getBytes().length, content.length);
-    }
+//    @Test
+//    void renderImageFromDB() throws Exception {
+//        //given
+//        RecipeCommand recipeCommand = new RecipeCommand();
+//        recipeCommand.setId("1");
+//
+//        String img = "Test image";
+//        Byte bytes[] = new Byte[img.getBytes().length];
+//        int i = 0;
+//        for (byte b : img.getBytes()) {
+//            bytes[i++] = b;
+//        }
+//
+//        recipeCommand.setImage(bytes);
+//        when(recipeReactiveService.findCommandById(anyString())).thenReturn(Mono.just(recipeCommand));
+//
+//        //when
+//        MockHttpServletResponse response =
+//                mockMvc.perform(get("/recipe/1/image")).andExpect(status().isOk()).andReturn()
+//                        .getResponse();
+//        byte[] content = response.getContentAsByteArray();
+//        assertEquals(img.getBytes().length, content.length);
+//    }
 
 //    @Test
 //    void getImageNumberFormatException() throws Exception {
